@@ -16,8 +16,15 @@ export const App: React.FC = () => {
     const timeId = window.setInterval(() => {
       if (hasClock) {
         setToday(new Date());
-        // eslint-disable-next-line no-console
-        console.log(today.toUTCString().slice(-12, -4));
+
+        setToday(curentToday => {
+          const newToday = new Date();
+
+          // eslint-disable-next-line no-console
+          console.log(curentToday.toUTCString().slice(-12, -4));
+
+          return newToday;
+        });
       }
     }, 1000);
 
@@ -25,7 +32,7 @@ export const App: React.FC = () => {
       // this code stops the timer and time
       window.clearInterval(timeId);
     };
-  }, [today, hasClock]);
+  }, [hasClock]);
 
   useEffect(() => {
     // This code starts a timer
@@ -45,20 +52,32 @@ export const App: React.FC = () => {
     return () => {
       window.clearInterval(timerId);
     };
-  }, [clockName, hasClock]);
+  }, [hasClock]);
 
   useEffect(() => {
-    document.addEventListener('contextmenu', (event: MouseEvent) => {
+    const handleContextMenu = (event: MouseEvent) => {
       event.preventDefault(); // not to show the context menu
 
       setHasClock(false);
-    });
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+    };
   }, []);
 
   useEffect(() => {
-    document.addEventListener('click', () => {
+    const handleClick = () => {
       setHasClock(true);
-    });
+    };
+
+    document.addEventListener('click', handleClick);
+
+    return () => {
+      document.removeEventListener('click', handleClick);
+    };
   }, []);
 
   return (
